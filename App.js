@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, Pressable } from "react-native";
 import {
     Button,
     ScrollView,
@@ -8,6 +8,7 @@ import {
     TextInput,
     View,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
     const [goal, setGoal] = useState("");
@@ -19,37 +20,49 @@ export default function App() {
 
     submitHandler = () => {
         setGoalList((currentList) => [...currentList, goal]);
+        setGoal("");
     };
 
     return (
-        <View style={styles.appContainer}>
-            <View style={styles.goalList}>
-                <Text style={styles.goalListTitle}>List of Goals</Text>
-                <FlatList
-                    data={goalList}
-                    renderItem={(itemData) => {
-                        return (
-                            <View
-                                style={styles.goalItemText}
-                                key={itemData.index}
-                            >
-                                <Text style={{ fontSize: 15 }}>
-                                    {itemData.item}
-                                </Text>
-                            </View>
-                        );
-                    }}
-                />
+        <>
+            <StatusBar style="light" />
+            <View style={styles.appContainer}>
+                <View style={styles.goalList}>
+                    <Text style={styles.goalListTitle}>List of Goals</Text>
+                    <FlatList
+                        data={goalList}
+                        renderItem={(itemData) => {
+                            return (
+                                <Pressable
+                                    onPress={() => console.log("pressed")}
+                                    style={({ pressed }) =>
+                                        pressed && styles.pressedItem
+                                    }
+                                >
+                                    <View
+                                        style={styles.goalItemText}
+                                        key={itemData.index}
+                                    >
+                                        <Text style={{ fontSize: 15 }}>
+                                            {itemData.item}
+                                        </Text>
+                                    </View>
+                                </Pressable>
+                            );
+                        }}
+                    />
+                </View>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Your Goal"
+                        onChangeText={changeHandler}
+                        value={goal}
+                    />
+                    <Button title="Add Goal" onPress={submitHandler} />
+                </View>
             </View>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.textInput}
-                    placeholder="Your Goal"
-                    onChangeText={changeHandler}
-                />
-                <Button title="Add Goal" onPress={submitHandler} />
-            </View>
-        </View>
+        </>
     );
 }
 
@@ -84,5 +97,11 @@ const styles = StyleSheet.create({
     },
     goalItemText: {
         padding: 2,
+        borderRadius: 1,
+        marginVertical: 5,
+        backgroundColor: "white",
+    },
+    pressedItem: {
+        opacity: 0.5,
     },
 });
